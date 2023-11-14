@@ -1,27 +1,35 @@
-version: '3.8'
+version: "3"
 
 services:
-  postgres:
-    image: postgres:13-alpine
+  db:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: springjwt
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgres/data
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - postgres-pgadmin
 
-  app:
-    build: .
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
     ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
+      - "8585:80"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/springjwt
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      PGADMIN_DEFAULT_EMAIL: fabiannosanttos@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - postgres-pgadmin
+
+networks:
+  postgres-pgadmin:
 
 volumes:
-  postgres-data:
+  local_pgdata:
+  pgadmin-data:

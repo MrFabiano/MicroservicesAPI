@@ -21,14 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
 import com.microservices.apis.dto.UsuarioDTO;
@@ -38,7 +31,7 @@ import com.microservices.apis.repository.UsuarioRepository;
 
 //@CrossOrigin(origins = "https://www.minhaapi.com.br")
 @RestController
-@RequestMapping(value = "/usuario")
+@RequestMapping("/usuario")
 public class IndexController {
 
 	@Autowired
@@ -131,6 +124,7 @@ public class IndexController {
 	@PutMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) {
 		
+
 	     List<Usuario> usuList = new ArrayList<>();
 	     usuList.stream()
 	     .collect(Collectors.toList());
