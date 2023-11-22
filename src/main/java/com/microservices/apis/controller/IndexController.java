@@ -4,38 +4,36 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
 import com.microservices.apis.dto.UsuarioDTO;
-import com.microservices.apis.model.Telefone;
 import com.microservices.apis.model.Usuario;
 import com.microservices.apis.repository.UsuarioRepository; 
 
 //@CrossOrigin(origins = "https://www.minhaapi.com.br")
 @RestController
-@RequestMapping("/usuario")
+@CrossOrigin
+@RequestMapping("/api/usuario")
 public class IndexController {
 
-	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private final UsuarioRepository usuarioRepository;
+
+	public IndexController(UsuarioRepository usuarioRepository) {
+		this.usuarioRepository = usuarioRepository;
+	}
 
 	// Passando mais de um parametro
 	@GetMapping(value = "/{id}/codigo/{codigoVenda}", produces = "application/json")
@@ -55,13 +53,22 @@ public class IndexController {
 		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/", produces = "application/json")
-	public ResponseEntity<Usuario> usuarios() {
+	@GetMapping(produces = "application/json")
+	public ResponseEntity<List<Usuario>> usuarioGet() {
 
-	    Usuario usuario =   (Usuario) usuarioRepository.findAll();
+	    List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
 		
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
-		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+		return new ResponseEntity<>(usuario, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/", produces = "application/json")
+	public ResponseEntity<List<Usuario>>usuarios() {
+
+		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
+
+		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
+		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/", produces = "application/json")

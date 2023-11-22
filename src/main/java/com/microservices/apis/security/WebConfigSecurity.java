@@ -1,6 +1,5 @@
 package com.microservices.apis.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,8 +20,11 @@ Mapeia a URI
 @EnableWebSecurity
 public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
 
-    @Autowired
-    private ImplementacaoUserDetailsService implementacaoUserDetailsService;
+    private final ImplementacaoUserDetailsService implementacaoUserDetailsService;
+
+    public WebConfigSecurity(ImplementacaoUserDetailsService implementacaoUserDetailsService) {
+        this.implementacaoUserDetailsService = implementacaoUserDetailsService;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -32,9 +34,11 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
         http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         //Ativando a permissão para o acesso a pagina inicial do sistema EX: sistema.com.br/index
+
         .disable().authorizeRequests().antMatchers("/").permitAll()
+
         .antMatchers("/index").permitAll()
-        
+
         .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
         //URL de Logout - Redireciona apos o user deslogar do sistema
@@ -44,14 +48,19 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
 
         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
-        //Filtra requisições de login para 
+        //Filtra requisições de login para
+
         .and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
                          UsernamePasswordAuthenticationFilter.class)
-       
+         .cors().and().csrf().disable()
+
 
         //Filtra demais requisições para verificar a presença do TOKEN JWT no HEADER HTTP
-        .addFilterBefore(new JWTAPIAutenticacaoFilter(), 
+        .addFilterBefore(new JWTAPIAutenticacaoFilter(),
                UsernamePasswordAuthenticationFilter.class);
+
+        //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
     }
 
     @Override
