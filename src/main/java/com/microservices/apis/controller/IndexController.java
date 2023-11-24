@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,7 +43,7 @@ public class IndexController {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 
-		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
+        return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{id}", produces = "application/json")
@@ -63,6 +64,7 @@ public class IndexController {
 	}
 
 	@GetMapping(value = "/", produces = "application/json")
+	@CachePut("cacheusuarios")
 	public ResponseEntity<List<Usuario>>usuarios() {
 
 		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
@@ -70,6 +72,17 @@ public class IndexController {
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
+
+	@GetMapping(value = "/userByName/{nome}", produces = "application/json")
+	@CachePut("cacheusuarios")
+	public ResponseEntity<List<Usuario>>userByNome(@PathVariable("nome") String nome) {
+
+		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByNome(nome);
+
+		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
+		return new ResponseEntity<>(usuario, HttpStatus.OK);
+	}
+
 
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> usuarios(@RequestBody @Valid Usuario usuario) throws IOException {
@@ -133,18 +146,11 @@ public class IndexController {
 		
 
 	     List<Usuario> usuList = new ArrayList<>();
-	     usuList.stream()
-	     .collect(Collectors.toList());
+        new ArrayList<>(usuList);
 	     	
 		   usuarioRepository.findUserByLogin(usuario.getLogin());
-		   if(usuario.getSenha().equals(usuList.toArray())) {
-			   
-			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-			usuario.setSenha(senhaCriptografada);
-			
-		   }
-			
-			Usuario usuarioSalvo = usuarioRepository.save(usuario); 
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.CREATED);
 
 		 }
@@ -157,7 +163,7 @@ public class IndexController {
 
 	}
 
-	@DeleteMapping(value = "/{id}", produces = "application/json")
+	@DeleteMapping(value = "/{id}", produces = "application/text")
 	public ResponseEntity<Usuario> delete(@PathVariable("id") Long id) {
 
 		usuarioRepository.deleteById(id);
