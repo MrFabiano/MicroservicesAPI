@@ -19,7 +19,7 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long>{
     Usuario findUserByLogin(String login);
 
     @Query("select u from Usuario u where u.nome like %?1%")
-    List<Usuario> findUserByNome(String nome);
+    List<Usuario> findUserByName(String nome);
 
     @Transactional
     @Modifying
