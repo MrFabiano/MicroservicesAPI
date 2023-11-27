@@ -15,19 +15,7 @@ public class MicroservicesApiApplication {
 		SpringApplication.run(MicroservicesApiApplication.class, args);
 		//System.out.println(new BCryptPasswordEncoder().encode("123"));
 	}
-
-	//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurerAdapter() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE").allowedOrigins("*")
-//						.allowedHeaders("*");
-//			}
-//		};
-//	}
-//}
-//
+	
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 				.allowedMethods("*")
