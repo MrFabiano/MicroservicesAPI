@@ -1,5 +1,7 @@
 package com.microservices.apis.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,9 @@ import com.microservices.apis.repository.UsuarioRepository;
 public class ImplementacaoUserDetailsService implements UserDetailsService{
 
     private final UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public ImplementacaoUserDetailsService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -36,4 +41,19 @@ public class ImplementacaoUserDetailsService implements UserDetailsService{
                 new BCryptPasswordEncoder().encode(usuario.getPassword()),
                 usuario.getAuthorities());
      }
+
+    public void insereAcessoPadrao(Long id) {
+
+        //Descobre qual a constraint de restrição
+        String constraint = usuarioRepository.cosultaConstraintRole();
+        if(constraint != null){
+            jdbcTemplate.execute(" ALTER TABLE usuarios_role DROP CONSTRAINT " + constraint);
+        }
+        //Remove constraint
+        //usuarioRepository.removeConstraintRole(constraint);
+
+        //INsere o acesso padrão
+        usuarioRepository.insertAccessRolePadrao(id);
+
+    }
 }

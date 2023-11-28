@@ -4,6 +4,9 @@ package com.microservices.apis.controller;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+
+import com.microservices.apis.repository.TelefoneRepository;
+import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +22,14 @@ import com.microservices.apis.repository.UsuarioRepository;
 public class IndexController {
 
 	private final UsuarioRepository usuarioRepository;
+	private final TelefoneRepository telefoneRepository;
 
-	public IndexController(UsuarioRepository usuarioRepository) {
+	private final ImplementacaoUserDetailsService implementacaoUserDetailsService;
+
+	public IndexController(UsuarioRepository usuarioRepository, TelefoneRepository telefoneRepository, ImplementacaoUserDetailsService implementacaoUserDetailsService) {
 		this.usuarioRepository = usuarioRepository;
+		this.telefoneRepository = telefoneRepository;
+		this.implementacaoUserDetailsService = implementacaoUserDetailsService;
 	}
 	
 	@PostMapping(value = "/", produces = "application/json")
@@ -34,6 +42,8 @@ public class IndexController {
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhaCriptografada);
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+		implementacaoUserDetailsService.insereAcessoPadrao(usuarioSalvo.getId());
 
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.OK);
 	}
@@ -91,9 +101,7 @@ public class IndexController {
 		   }
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 			return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.CREATED);
-
 		 }
-
 
 	@DeleteMapping(value = "/{id}", produces = "application/text")
 	public ResponseEntity<Usuario> delete(@PathVariable("id") Long id) {
@@ -101,5 +109,11 @@ public class IndexController {
 		usuarioRepository.deleteById(id);
 
 		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping(value = "/removePhone/{id}", produces = "application/text")
+	public String removePhone(@PathVariable("id") Long id){
+		telefoneRepository.deleteById(id);
+		return "ok";
 	}
 }
