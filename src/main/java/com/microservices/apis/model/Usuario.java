@@ -1,24 +1,18 @@
 package com.microservices.apis.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ConstraintMode;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -53,7 +47,11 @@ public class Usuario implements UserDetails{
         unique = false, updatable = false,
         foreignKey = @ForeignKey (name = "role_fk", value = ConstraintMode.CONSTRAINT)))
     private List<Role> roles = new ArrayList<>();
-    
+
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
+	private LocalDate dataNascimento = LocalDate.now();
+
     private String token = "";
     
     private String cep;
@@ -62,11 +60,16 @@ public class Usuario implements UserDetails{
     private String bairro;
     private String localidade;
     private String uf;
-    
-    
-    
 
-    public String getCep() {
+	public LocalDate getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
+	public String getCep() {
 		return cep;
 	}
 
@@ -116,7 +119,7 @@ public class Usuario implements UserDetails{
 
 	@JsonIgnore
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<Role> getAuthorities() {
         // São os acesso do usuario: admin, visitante e assim por diante "ROLE"
         return roles;
     }
