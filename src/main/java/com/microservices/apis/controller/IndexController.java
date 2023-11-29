@@ -8,6 +8,9 @@ import javax.validation.Valid;
 import com.microservices.apis.repository.TelefoneRepository;
 import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -68,22 +71,80 @@ public class IndexController {
 
 	@GetMapping(value = "/", produces = "application/json")
 	@CachePut("cacheusuarios")
-	public ResponseEntity<List<Usuario>>usuarios() {
+	public ResponseEntity<Page<Usuario>>usuarios() {
 
-		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
+		PageRequest page = PageRequest.of(0, 5, Sort.by("nome"));
+
+		Page<Usuario> list = usuarioRepository.findAll(page);
+
+		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
 
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
-		return new ResponseEntity<List<Usuario>>(usuario, HttpStatus.OK);
+		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/page/{pagina}", produces = "application/json")
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>>usuarioPage(@PathVariable("pagina") int pagina) {
+
+		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
+
+		Page<Usuario> list = usuarioRepository.findAll(page);
+
+		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
+
+		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
+		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/userByName/{nome}", produces = "application/json")
 	@CachePut("cacheusuarios")
-	public ResponseEntity<List<Usuario>> userByName(@PathVariable("nome") String nome) {
+	public ResponseEntity<Page<Usuario>> userByName(@PathVariable("nome") String nome) {
 
-		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByName(nome);
+
+		PageRequest pageRequest = null;
+		Page<Usuario> list = null;
+
+		if(nome == null || (nome != null && nome.trim().isEmpty()
+				|| nome.equalsIgnoreCase("undefined"))){
+
+			pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
+			list = usuarioRepository.findAll(pageRequest);
+		} else{
+			pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
+			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
+		}
+
+		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByName(nome);
 
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
-		return new ResponseEntity<>(usuario, HttpStatus.OK);
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+
+
+	@GetMapping(value = "/userByName/{nome}/page/{page}", produces = "application/json")
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>> userByNamePage(@PathVariable("nome") String nome,
+														@PathVariable("page") int page) {
+
+
+		PageRequest pageRequest = null;
+		Page<Usuario> list = null;
+
+		if(nome == null || (nome != null && nome.trim().isEmpty()
+				|| nome.equalsIgnoreCase("undefined"))){
+
+			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
+			list = usuarioRepository.findAll(pageRequest);
+		} else{
+			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
+			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
+		}
+
+		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByName(nome);
+
+		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/", produces = "application/json")
