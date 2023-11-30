@@ -1,5 +1,6 @@
 package com.microservices.apis.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.br.CPF;
@@ -32,7 +34,8 @@ public class Usuario implements UserDetails{
     private String login;
     private String senha;
     private String nome;
-	@CPF(message = "CPF invalido")
+
+	//@Pattern(regexp = ("^\\d{3}-\\d{3}-\\d{3}-\\d{2}$"))
     private String cpf;
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Telefone> telefones = new ArrayList<Telefone>();
@@ -60,7 +63,25 @@ public class Usuario implements UserDetails{
     private String bairro;
     private String localidade;
     private String uf;
+	@ManyToOne
+	private Profissao profissao;
 
+	private BigDecimal salario;
+
+	public BigDecimal getSalario() {
+		return salario;
+	}
+
+	public void setSalario(BigDecimal salario) {
+		this.salario = salario;
+	}
+
+	public Profissao getProfissao() {
+		return profissao;
+	}
+	public void setProfissao(Profissao profissao) {
+		this.profissao = profissao;
+	}
 	public LocalDate getDataNascimento() {
 		return dataNascimento;
 	}

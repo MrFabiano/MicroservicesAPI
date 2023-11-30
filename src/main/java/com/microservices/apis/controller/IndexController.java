@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 
+import com.microservices.apis.model.Profissao;
 import com.microservices.apis.repository.TelefoneRepository;
 import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import org.springframework.cache.annotation.CachePut;
@@ -178,3 +179,4 @@ public class IndexController {
 		return "ok";
 	}
 }
+
