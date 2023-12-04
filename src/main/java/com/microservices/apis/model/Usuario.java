@@ -2,20 +2,14 @@ package com.microservices.apis.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,7 +47,7 @@ public class Usuario implements UserDetails{
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
-	private LocalDate dataNascimento = LocalDate.now();
+	private LocalDate dataCadastro = LocalDate.now();
 
     private String token = "";
     
@@ -82,12 +76,12 @@ public class Usuario implements UserDetails{
 	public void setProfissao(Profissao profissao) {
 		this.profissao = profissao;
 	}
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
+	public LocalDate getDataCadastro() {
+		return dataCadastro;
 	}
 
-	public void setDataNascimento(LocalDate dataNascimento) {
-		this.dataNascimento = dataNascimento;
+	public void setDataCadastro(LocalDate dataCadastro) {
+		this.dataCadastro = dataCadastro;
 	}
 
 	public String getCep() {
