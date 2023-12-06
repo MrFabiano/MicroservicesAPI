@@ -47,7 +47,7 @@ public class Usuario implements UserDetails{
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
-	private LocalDate dataCadastro = LocalDate.now();
+	private LocalDate dataNascimento = LocalDate.now();
 
     private String token = "";
     
@@ -61,6 +61,7 @@ public class Usuario implements UserDetails{
 	private Profissao profissao;
 
 	private BigDecimal salario;
+
 
 	public BigDecimal getSalario() {
 		return salario;
@@ -76,12 +77,12 @@ public class Usuario implements UserDetails{
 	public void setProfissao(Profissao profissao) {
 		this.profissao = profissao;
 	}
-	public LocalDate getDataCadastro() {
-		return dataCadastro;
+	public LocalDate getDataNascimento() {
+		return dataNascimento;
 	}
 
-	public void setDataCadastro(LocalDate dataCadastro) {
-		this.dataCadastro = dataCadastro;
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
 	}
 
 	public String getCep() {

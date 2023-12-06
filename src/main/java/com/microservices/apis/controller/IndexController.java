@@ -1,15 +1,18 @@
 package com.microservices.apis.controller;
 
 
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.microservices.apis.model.UserReport;
 import com.microservices.apis.repository.TelefoneRepository;
 import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import com.microservices.apis.service.RelatorioService;
-import net.sf.jasperreports.util.Base64Util;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
@@ -24,22 +27,22 @@ import com.microservices.apis.repository.UsuarioRepository;
 
 //@CrossOrigin(origins = "https://www.minhaapi.com.br")
 @RestController
-@CrossOrigin
 @RequestMapping("/api/usuario")
+@CrossOrigin("*")
 public class IndexController {
 
 	private final UsuarioRepository usuarioRepository;
 	private final TelefoneRepository telefoneRepository;
 	private final RelatorioService relatorioService;
-
 	private final ImplementacaoUserDetailsService implementacaoUserDetailsService;
 
-	public IndexController(UsuarioRepository usuarioRepository, TelefoneRepository telefoneRepository, RelatorioService relatorioService, RelatorioService relatorioService1, ImplementacaoUserDetailsService implementacaoUserDetailsService) {
+	public IndexController(UsuarioRepository usuarioRepository, TelefoneRepository telefoneRepository, RelatorioService relatorioService, ImplementacaoUserDetailsService implementacaoUserDetailsService) {
 		this.usuarioRepository = usuarioRepository;
 		this.telefoneRepository = telefoneRepository;
-		this.relatorioService = relatorioService1;
+		this.relatorioService = relatorioService;
 		this.implementacaoUserDetailsService = implementacaoUserDetailsService;
 	}
+
 
 	@PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Usuario> postCadastro(@RequestBody @Valid Usuario usuario) {
@@ -184,15 +187,44 @@ public class IndexController {
 		return "ok";
 	}
 
-	@GetMapping(value = "/relatorio", produces = "application/json")
+	@GetMapping(value = "/relatorio", produces = "application/text")
 	public ResponseEntity<String> downloadRelatrio(HttpServletRequest request) throws Exception {
-		byte[] pdf = relatorioService.gerarRelatorio("relatorio-usuario",
+		Map<String,Object> params = new HashMap<>();
+		byte[] pdf = relatorioService.gerarReport("relatorio-usuario",
+				params, request.getServletContext());
+
+		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+
+		return new ResponseEntity<>(base64, HttpStatus.OK);
+
+	}
+
+	@PostMapping(value= "/relatorio/", produces = "application/text")
+	public ResponseEntity<String> downloadRelatrioParam(HttpServletRequest request, @RequestBody UserReport userReport) throws Exception {
+       try{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat dateFormatParam = new SimpleDateFormat("yyyy/MM/dd");
+
+		String dataInicio = dateFormatParam.format(dateFormat.parse(userReport.getDataInicio()));
+		String dataFim = dateFormatParam.format(dateFormat.parse(userReport.getDataFim()));
+
+//		String dataInicio = dateFormatParam.format(dateFormat.parse("30/11/2023"));
+//		String dataFim = dateFormatParam.format(dateFormat.parse("2023/12/29"));
+
+		Map<String,Object> params = new HashMap<>();
+		params.put("DATA_INICIO", dataInicio);
+		params.put("DATA_FIM", dataFim);
+
+		byte[] pdf = relatorioService.gerarReportPrint("relatorio-usuario-param", params,
 				request.getServletContext());
 
 		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
 
 		return new ResponseEntity<>(base64, HttpStatus.OK);
 
+	}catch (Exception e){
+	   throw new RuntimeException(e.getMessage());
+	   }
 	}
 }
 

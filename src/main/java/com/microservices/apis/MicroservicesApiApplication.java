@@ -22,8 +22,11 @@ public class MicroservicesApiApplication {
 				.allowedMethods("*")
 				.allowedOrigins("*");
 
+
 	}
+
 }
+
 
 
 
