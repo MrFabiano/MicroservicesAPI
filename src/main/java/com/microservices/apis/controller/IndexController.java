@@ -9,17 +9,20 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.microservices.apis.model.UserChart;
 import com.microservices.apis.model.UserReport;
 import com.microservices.apis.repository.TelefoneRepository;
 import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import com.microservices.apis.service.RelatorioService;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.microservices.apis.model.Usuario;
@@ -35,6 +38,8 @@ public class IndexController {
 	private final TelefoneRepository telefoneRepository;
 	private final RelatorioService relatorioService;
 	private final ImplementacaoUserDetailsService implementacaoUserDetailsService;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	public IndexController(UsuarioRepository usuarioRepository, TelefoneRepository telefoneRepository, RelatorioService relatorioService, ImplementacaoUserDetailsService implementacaoUserDetailsService) {
 		this.usuarioRepository = usuarioRepository;
@@ -187,7 +192,7 @@ public class IndexController {
 		return "ok";
 	}
 
-	@GetMapping(value = "/relatorio", produces = "application/text")
+	@GetMapping(value = "/report", produces = "application/text")
 	public ResponseEntity<String> downloadRelatrio(HttpServletRequest request) throws Exception {
 		Map<String,Object> params = new HashMap<>();
 		byte[] pdf = relatorioService.gerarReport("relatorio-usuario",
@@ -199,7 +204,7 @@ public class IndexController {
 
 	}
 
-	@PostMapping(value= "/relatorio/", produces = "application/text")
+	@PostMapping(value= "/report/", produces = "application/text")
 	public ResponseEntity<String> downloadRelatrioParam(HttpServletRequest request, @RequestBody UserReport userReport) throws Exception {
        try{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -225,6 +230,22 @@ public class IndexController {
 	}catch (Exception e){
 	   throw new RuntimeException(e.getMessage());
 	   }
+	}
+
+	@GetMapping(value = "/graphic", produces = "application/json")
+    public ResponseEntity<UserChart> graphic(){
+		UserChart userChart = new UserChart();
+
+		List<String> resultado = jdbcTemplate.queryForList("SELECT array_agg(nome) FROM usuario where salario > 0 and nome <> ''union all SELECT cast(array_agg(salario) as character varying[]) FROM usuario where salario > 0 and nome <> ''", String.class);
+		if(!resultado.isEmpty()){
+			String nomes = resultado.get(0).replaceAll("\\{","").replaceAll("\\}", "").replaceAll("\"", "");
+			String salario = resultado.get(1).replaceAll("\\{","").replaceAll("\\}", "");
+
+			userChart.setNome(nomes);
+			userChart.setSalario(salario);
+		}
+
+		return new ResponseEntity<>(userChart, HttpStatus.OK);
 	}
 }
 
