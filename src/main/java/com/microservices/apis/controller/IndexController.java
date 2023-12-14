@@ -9,8 +9,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.microservices.apis.model.UserChart;
 import com.microservices.apis.model.UserReport;
+import com.microservices.apis.model.UserChart;
 import com.microservices.apis.repository.TelefoneRepository;
 import com.microservices.apis.service.ImplementacaoUserDetailsService;
 import com.microservices.apis.service.RelatorioService;
@@ -20,7 +20,9 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,25 +30,22 @@ import org.springframework.web.bind.annotation.*;
 import com.microservices.apis.model.Usuario;
 import com.microservices.apis.repository.UsuarioRepository; 
 
-//@CrossOrigin(origins = "https://www.minhaapi.com.br")
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("/api/user")
 @CrossOrigin("*")
 public class IndexController {
 
-	private final UsuarioRepository usuarioRepository;
-	private final TelefoneRepository telefoneRepository;
-	private final RelatorioService relatorioService;
-	private final ImplementacaoUserDetailsService implementacaoUserDetailsService;
+	@Autowired
+	private  UsuarioRepository usuarioRepository;
+	@Autowired
+	private  TelefoneRepository telefoneRepository;
+	@Autowired
+	private  RelatorioService relatorioService;
+	@Autowired
+	private  ImplementacaoUserDetailsService implementacaoUserDetailsService;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public IndexController(UsuarioRepository usuarioRepository, TelefoneRepository telefoneRepository, RelatorioService relatorioService, ImplementacaoUserDetailsService implementacaoUserDetailsService) {
-		this.usuarioRepository = usuarioRepository;
-		this.telefoneRepository = telefoneRepository;
-		this.relatorioService = relatorioService;
-		this.implementacaoUserDetailsService = implementacaoUserDetailsService;
-	}
 
 
 	@PostMapping(value = "/", produces = "application/json")
@@ -97,9 +96,9 @@ public class IndexController {
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/page/{pagina}", produces = "application/json")
+	@GetMapping(value = "/page/{page}", produces = "application/json")
 	@CachePut("cacheusuarios")
-	public ResponseEntity<Page<Usuario>> usuarioPage(@PathVariable("pagina") int pagina) {
+	public ResponseEntity<Page<Usuario>> usuarioPage(@PathVariable("page") int pagina) {
 
 		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
 
@@ -199,36 +198,32 @@ public class IndexController {
 				params, request.getServletContext());
 
 		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-
 		return new ResponseEntity<>(base64, HttpStatus.OK);
 
 	}
 
 	@PostMapping(value= "/report/", produces = "application/text")
-	public ResponseEntity<String> downloadRelatrioParam(HttpServletRequest request, @RequestBody UserReport userReport) throws Exception {
+	public ResponseEntity<String> downloadRelatrioParam(HttpServletRequest request, @RequestBody UserReport userReport) {
        try{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat dateFormatParam = new SimpleDateFormat("yyyy/MM/dd");
+		SimpleDateFormat dateFormatParam = new SimpleDateFormat("yyyy-MM-dd");
 
 		String dataInicio = dateFormatParam.format(dateFormat.parse(userReport.getDataInicio()));
 		String dataFim = dateFormatParam.format(dateFormat.parse(userReport.getDataFim()));
 
-//		String dataInicio = dateFormatParam.format(dateFormat.parse("30/11/2023"));
-//		String dataFim = dateFormatParam.format(dateFormat.parse("2023/12/29"));
-
 		Map<String,Object> params = new HashMap<>();
 		params.put("DATA_INICIO", dataInicio);
 		params.put("DATA_FIM", dataFim);
-
 		byte[] pdf = relatorioService.gerarReportPrint("relatorio-usuario-param", params,
 				request.getServletContext());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_PDF);
 
-		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-
-		return new ResponseEntity<>(base64, HttpStatus.OK);
+		   String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		return new ResponseEntity<>(base64,headers, HttpStatus.OK);
 
 	}catch (Exception e){
-	   throw new RuntimeException(e.getMessage());
+	   throw new RuntimeException("It was not possible to issue the report");
 	   }
 	}
 
@@ -248,4 +243,5 @@ public class IndexController {
 		return new ResponseEntity<>(userChart, HttpStatus.OK);
 	}
 }
+
 

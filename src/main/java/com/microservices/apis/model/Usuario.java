@@ -4,11 +4,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -47,7 +52,7 @@ public class Usuario implements UserDetails{
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
-	private LocalDate dataNascimento = LocalDate.now();
+	private Date dataNascimento;
 
     private String token = "";
     
@@ -62,6 +67,13 @@ public class Usuario implements UserDetails{
 
 	private BigDecimal salario;
 
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
 
 	public BigDecimal getSalario() {
 		return salario;
@@ -76,13 +88,6 @@ public class Usuario implements UserDetails{
 	}
 	public void setProfissao(Profissao profissao) {
 		this.profissao = profissao;
-	}
-	public LocalDate getDataNascimento() {
-		return dataNascimento;
-	}
-
-	public void setDataNascimento(LocalDate dataNascimento) {
-		this.dataNascimento = dataNascimento;
 	}
 
 	public String getCep() {

@@ -3,7 +3,8 @@ package com.microservices.apis.controller;
 import com.microservices.apis.error.ObjetoError;
 import com.microservices.apis.model.Usuario;
 import com.microservices.apis.repository.UsuarioRepository;
-import com.microservices.apis.service.ServiceEnviaEmial;
+import com.microservices.apis.service.ServiceSendEmail;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,18 +15,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 @RestController
-@RequestMapping(value = "/recuperar")
+@RequestMapping(value = "/recover")
 @CrossOrigin(origins = "*")
 public class RecuperaController {
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    private final ServiceEnviaEmial serviceEnviaEmial;
-
-    public RecuperaController(UsuarioRepository usuarioRepository, ServiceEnviaEmial serviceEnviaEmial) {
-        this.usuarioRepository = usuarioRepository;
-        this.serviceEnviaEmial = serviceEnviaEmial;
-    }
+    @Autowired
+    private ServiceSendEmail serviceSendEmail;
 
     @ResponseBody
     @PostMapping(value = "/")
@@ -36,7 +34,7 @@ public class RecuperaController {
 
         if(user == null){
             objetoError.setCode("404");
-            objetoError.setError("Usuario não encontrado");
+            objetoError.setError("User Not-found");
         }else{
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String senhaNova = dateFormat.format(Calendar.getInstance().getTime());
@@ -44,13 +42,13 @@ public class RecuperaController {
             String senhaCriptografada = new BCryptPasswordEncoder().encode(senhaNova);
             usuarioRepository.updateSenha(senhaCriptografada, user.getId());
 
-            serviceEnviaEmial.enviarEmail("Recuperação de senha",
+            serviceSendEmail.sendEmail("Password recovery",
                     user.getLogin(),
-                    "Sua nova senha é: " + senhaNova);
+                    "Your new password is: " + senhaNova);
 
 
             objetoError.setCode("200");
-            objetoError.setError("Usuario encontrado");
+            objetoError.setError("User Not-found");
         }
 
         return new ResponseEntity<>(objetoError, HttpStatus.OK);

@@ -3,19 +3,17 @@ package com.microservices.apis.service;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.net.InterfaceAddress;
 import java.util.Properties;
 
 @Service
-public class ServiceEnviaEmial {
+public class ServiceSendEmail {
 
     private final String userName = "fabianotestemail@gmail.com";
     private final String senha = "//*//*";
 
-    public void enviarEmail(String assunto, String emailDestino, String mensagem) throws MessagingException {
+    public void sendEmail(String assunto, String emailDestino, String mensagem) throws MessagingException {
 
         Properties properties = new Properties();
         properties.put("mail.smtp.ssl.trust", "*");

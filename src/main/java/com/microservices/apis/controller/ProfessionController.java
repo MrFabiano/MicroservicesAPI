@@ -2,6 +2,7 @@ package com.microservices.apis.controller;
 
 import com.microservices.apis.model.Profissao;
 import com.microservices.apis.repository.ProfissaoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,16 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/profissao")
+@RequestMapping(value = "/profession")
 @CrossOrigin(origins = "*")
-public class ProffisaoController {
+public class ProfessionController {
 
-
-    private final ProfissaoRepository profissaoRepository;
-
-    public ProffisaoController(ProfissaoRepository profissaoRepository) {
-        this.profissaoRepository = profissaoRepository;
-    }
+    @Autowired
+    private ProfissaoRepository profissaoRepository;
 
     @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<List<Profissao>> listProfissao(){

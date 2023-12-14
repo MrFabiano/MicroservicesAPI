@@ -14,15 +14,11 @@ import com.microservices.apis.repository.UsuarioRepository;
 @Service
 public class ImplementacaoUserDetailsService implements UserDetailsService{
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private  UsuarioRepository usuarioRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    public ImplementacaoUserDetailsService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,14 +39,13 @@ public class ImplementacaoUserDetailsService implements UserDetailsService{
      }
 
     public void insereAcessoPadrao(Long id) {
-
         //Descobre qual a constraint de restrição
         String constraint = usuarioRepository.cosultaConstraintRole();
         if(constraint != null){
             jdbcTemplate.execute(" ALTER TABLE usuarios_role DROP CONSTRAINT " + constraint);
         }
         //Remove constraint
-        //usuarioRepository.removeConstraintRole(constraint);
+//        usuarioRepository.removeConstraintRole(constraint);
 
         //INsere o acesso padrão
         usuarioRepository.insertAccessRolePadrao(id);
