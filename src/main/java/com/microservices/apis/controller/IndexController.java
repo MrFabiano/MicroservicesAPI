@@ -216,11 +216,8 @@ public class IndexController {
 		params.put("DATA_FIM", dataFim);
 		byte[] pdf = relatorioService.gerarReportPrint("relatorio-usuario-param", params,
 				request.getServletContext());
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_PDF);
-
-		   String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-		return new ResponseEntity<>(base64,headers, HttpStatus.OK);
+		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		return new ResponseEntity<>(base64, HttpStatus.OK);
 
 	}catch (Exception e){
 	   throw new RuntimeException("It was not possible to issue the report");

@@ -8,7 +8,9 @@
 	<parameter name="DATA_INICIO" class="java.lang.String"/>
 	<parameter name="DATA_FIM" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[select * from usuario WHERE data_nascimento BETWEEN '$P!{DATA_INICIO}'  AND '$P!{DATA_FIM}']]>
+		<![CDATA[select * from usuario
+WHERE data_nascimento BETWEEN '$P!{DATA_INICIO}' AND '$P!{DATA_FIM}' OR data_nascimento IS NULL
+]]>
 	</queryString>
 	<field name="id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="id"/>

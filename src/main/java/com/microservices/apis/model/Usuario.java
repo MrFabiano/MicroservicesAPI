@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -52,6 +53,7 @@ public class Usuario implements UserDetails{
 
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
+	@NotNull
 	private Date dataNascimento;
 
     private String token = "";

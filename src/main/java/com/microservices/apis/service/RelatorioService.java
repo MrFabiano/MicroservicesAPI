@@ -1,5 +1,6 @@
 package com.microservices.apis.service;
 
+
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,11 +40,10 @@ public class RelatorioService implements Serializable {
             InputStream reportStream = getClass().getResourceAsStream("/relatorios/relatorio-usuario-param.jasper");
             var parametros = new HashMap<String, Object>();
             parametros.put("REPORT_LOCALE", new Locale("pt", "BR"));
-
             if (connection != null) {
-            var jasperPrint = JasperFillManager.fillReport(reportStream, parametros,(Connection) null);
+            var jasperPrint = JasperFillManager.fillReport(reportStream, parametros,(Connection)null);
             return JasperExportManager.exportReportToPdf(jasperPrint);
-            }
+           }
         } catch (Exception e) {
             throw new RuntimeException("It was not possible to issue the report");
         }
