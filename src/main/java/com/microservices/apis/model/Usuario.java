@@ -4,29 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Usuario implements UserDetails{
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -43,7 +32,7 @@ public class Usuario implements UserDetails{
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_role", uniqueConstraints = @UniqueConstraint(
         columnNames = {"usuario_id", "role_id"}, name = "unique_role_user"),
-        joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id", 
+        joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id",
         table = "usuario", unique = false,
         foreignKey = @ForeignKey(name = "usuario_fk", value = ConstraintMode.CONSTRAINT)),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "role",
@@ -51,13 +40,11 @@ public class Usuario implements UserDetails{
         foreignKey = @ForeignKey (name = "role_fk", value = ConstraintMode.CONSTRAINT)))
     private List<Role> roles = new ArrayList<>();
 
-	@JsonFormat(pattern = "dd/MM/yyyy")
-	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd/MM/yyyy")
 	@NotNull
-	private Date dataNascimento;
+	private LocalDate dataNascimento;
 
     private String token = "";
-    
+
     private String cep;
     private String logradouro;
     private String complemento;
@@ -69,11 +56,11 @@ public class Usuario implements UserDetails{
 
 	private BigDecimal salario;
 
-	public Date getDataNascimento() {
+	public LocalDate getDataNascimento() {
 		return dataNascimento;
 	}
 
-	public void setDataNascimento(Date dataNascimento) {
+	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
 
@@ -138,7 +125,7 @@ public class Usuario implements UserDetails{
 
 	public void setUf(String uf) {
 		this.uf = uf;
-	} 
+	}
 
 	@JsonIgnore
     @Override

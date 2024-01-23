@@ -1,5 +1,6 @@
 package com.microservices.apis.controller;
 
+import com.microservices.apis.dto.UsuarioDTO;
 import com.microservices.apis.error.ObjetoError;
 import com.microservices.apis.model.Usuario;
 import com.microservices.apis.repository.UsuarioRepository;
