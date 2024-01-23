@@ -30,9 +30,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	@Query(nativeQuery = true, value="update usuario set token = ?1 where login = ?2")
 	void atualizaTokenUser(String token, String login);
 
-    @Query(value="SELECT constraint_name from information_schema.constraint_column_usage\n" +
-            "\tWHERE table_name = 'usuarios_role' and column_name = 'role_id'\n" +
-            "\tand constraint_name <> 'unique_role_user';", nativeQuery = true)
+    @Query(value="SELECT constraint_name from information_schema.constraint_column_usage WHERE table_name = 'usuarios_role' and column_name = 'role_id' and constraint_name <> 'unique_role_user';", nativeQuery = true)
     String cosultaConstraintRole();
 
 //    @Modifying
@@ -41,8 +39,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "INSERT INTO usuarios_role(usuario_id, role_id)\n" +
-            "\tvalues(?1,(SELECT id from role where nome_role = 'ROLE_USER'));")
+    @Query(nativeQuery = true, value = "INSERT INTO usuarios_role(usuario_id, role_id) values(?1,(SELECT id from role where nome_role = 'ROLE_USER'));")
     void insertAccessRolePadrao(Long idUser);
 
 

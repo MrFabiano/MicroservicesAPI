@@ -14,11 +14,14 @@ import com.microservices.apis.repository.UsuarioRepository;
 @Service
 public class ImplementacaoUserDetailsService implements UserDetailsService{
 
-    @Autowired
-    private  UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final UsuarioRepository usuarioRepository;
+    private final JdbcTemplate jdbcTemplate;
+
+    public ImplementacaoUserDetailsService(UsuarioRepository usuarioRepository, JdbcTemplate jdbcTemplate) {
+        this.usuarioRepository = usuarioRepository;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
