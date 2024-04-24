@@ -20,9 +20,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -160,21 +158,32 @@ public class IndexController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/", produces = "application/json")
-	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) {
+	@PutMapping(value = "/{id}", produces = "application/json")
+	public ResponseEntity<Usuario> atualizar(@PathVariable(value = "id") Long id, @RequestBody Usuario usuario) {
 
-		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
-			usuario.getTelefones().get(pos).setUsuario(usuario);
+		Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
+
+		if (usuarioExistente == null) {
+			return ResponseEntity.notFound().build();
 		}
 
-		Usuario userTemporario = usuarioRepository.findById(usuario.getId()).get();
+		// Atualiza os dados do usuário existente com os dados do usuário recebido na requisição
+		usuarioExistente.setNome(usuario.getNome());
+		usuarioExistente.setCep(usuario.getCep());
+		usuarioExistente.setSenha(usuario.getSenha());
+		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
+		usuarioExistente.setTelefones(usuario.getTelefones());
 
-		if (!userTemporario.getSenha().equals(usuario.getSenha())) {
+		// Verifica se a senha foi alterada
+		if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-			usuario.setSenha(senhaCriptografada);
+			usuarioExistente.setSenha(senhaCriptografada);
 		}
-		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.CREATED);
+
+		// Salva o usuário atualizado
+		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
+
+		return ResponseEntity.ok(usuarioSalvo);
 	}
 
 	@DeleteMapping(value = "/{id}", produces = "application/text")
