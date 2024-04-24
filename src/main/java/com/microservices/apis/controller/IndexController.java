@@ -162,24 +162,20 @@ public class IndexController {
 	public ResponseEntity<Usuario> atualizar(@PathVariable(value = "id") Long id, @RequestBody Usuario usuario) {
 
 		Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
-
 		if (usuarioExistente == null) {
 			return ResponseEntity.notFound().build();
 		}
-
 		// Atualiza os dados do usuário existente com os dados do usuário recebido na requisição
 		usuarioExistente.setNome(usuario.getNome());
 		usuarioExistente.setCep(usuario.getCep());
 		usuarioExistente.setSenha(usuario.getSenha());
 		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
 		usuarioExistente.setTelefones(usuario.getTelefones());
-
 		// Verifica se a senha foi alterada
 		if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 			usuarioExistente.setSenha(senhaCriptografada);
 		}
-
 		// Salva o usuário atualizado
 		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
 
