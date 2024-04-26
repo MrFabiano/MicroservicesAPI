@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservices.apis.model.UserReport;
 import com.microservices.apis.model.UserChart;
 import com.microservices.apis.repository.TelefoneRepository;
@@ -52,7 +53,6 @@ public class IndexController {
 		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
 			usuario.getTelefones().get(pos).setUsuario(usuario);
 		}
-
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhaCriptografada);
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
@@ -195,39 +195,6 @@ public class IndexController {
 	public String removePhone(@PathVariable("id") Long id) {
 		telefoneRepository.deleteById(id);
 		return "ok";
-	}
-
-	@GetMapping(value = "/report", produces = "application/text")
-	public ResponseEntity<String> downloadRelatrio(HttpServletRequest request) throws Exception {
-		Map<String,Object> params = new HashMap<>();
-		byte[] pdf = relatorioService.gerarReport("relatorio-usuario",
-				params, request.getServletContext());
-
-		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-		return new ResponseEntity<>(base64, HttpStatus.OK);
-
-	}
-
-	@PostMapping(value= "/report/", produces = "application/text")
-	public ResponseEntity<String> downloadRelatrioParam(HttpServletRequest request, @RequestBody UserReport userReport) {
-       try{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat dateFormatParam = new SimpleDateFormat("yyyy-MM-dd");
-
-		String dataInicio = dateFormatParam.format(dateFormat.parse(userReport.getDataInicio()));
-		String dataFim = dateFormatParam.format(dateFormat.parse(userReport.getDataFim()));
-
-		Map<String,Object> params = new HashMap<>();
-		params.put("DATA_INICIO", dataInicio);
-		params.put("DATA_FIM", dataFim);
-		byte[] pdf = relatorioService.gerarReportPrint("relatorio-usuario-param", params,
-				request.getServletContext());
-		String base64 = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
-		return new ResponseEntity<>(base64, HttpStatus.OK);
-
-	}catch (Exception e){
-	   throw new RuntimeException("It was not possible to issue the report");
-	   }
 	}
 
 	@GetMapping(value = "/graphic", produces = "application/json")
