@@ -30,11 +30,9 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         //Configura as solicitações de acesso por http
         //Ativando a proteção contra usuario que não está validado por tokent
-
         http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         //Ativando a permissão para o acesso a pagina inicial do sistema EX: sistema.com.br/index
-
         .disable().authorizeRequests().antMatchers("/").permitAll()
 
         .antMatchers("/index", "/recuperar/**").permitAll()
@@ -45,11 +43,9 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter{
         .anyRequest().authenticated().and().logout().logoutSuccessUrl("/index")
 
         //Mapeia URL de Logout e invalida o usuario
-
         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 
-        //Filtra requisições de login para
-
+        //Filtra requisições de login para autenticação
         .and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
                          UsernamePasswordAuthenticationFilter.class)
          .cors().and().csrf().disable()

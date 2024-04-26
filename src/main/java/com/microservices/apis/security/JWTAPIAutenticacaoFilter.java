@@ -22,7 +22,6 @@ public class JWTAPIAutenticacaoFilter extends GenericFilterBean{
             throws IOException, ServletException {
         
                 //Estabelece a autenticação para a notificação
-
                 Authentication authentication = new JWTTokenAutenticacaoService()
                    .getAuthentication((HttpServletRequest) request, (HttpServletResponse)response); 
 
@@ -30,7 +29,6 @@ public class JWTAPIAutenticacaoFilter extends GenericFilterBean{
                    SecurityContextHolder.getContext().setAuthentication(authentication);
 
                    //Continua o processo
-
                    chain.doFilter(request, response);
         
     }

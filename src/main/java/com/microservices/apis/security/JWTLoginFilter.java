@@ -36,7 +36,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter{
             throws AuthenticationException, IOException, ServletException {
         
                 //esta pegando o token para validar
-
         Usuario user = new ObjectMapper()
                  .readValue(request.getInputStream(), Usuario.class);
 

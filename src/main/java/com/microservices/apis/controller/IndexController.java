@@ -167,6 +167,7 @@ public class IndexController {
 		}
 		// Atualiza os dados do usuário existente com os dados do usuário recebido na requisição
 		usuarioExistente.setNome(usuario.getNome());
+		usuarioExistente.setDataNascimento(usuario.getDataNascimento());
 		usuarioExistente.setCep(usuario.getCep());
 		usuarioExistente.setSenha(usuario.getSenha());
 		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
