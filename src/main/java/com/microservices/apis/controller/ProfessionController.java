@@ -23,7 +23,6 @@ public class ProfessionController {
     @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<List<Profissao>> listProfissao(){
         List<Profissao> list = profissaoRepository.findAll();
-
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

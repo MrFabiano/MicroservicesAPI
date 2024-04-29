@@ -58,7 +58,6 @@ public class IndexController {
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
 		implementacaoUserDetailsService.insereAcessoPadrao(usuarioSalvo.getId());
-
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.OK);
 	}
 
@@ -67,7 +66,6 @@ public class IndexController {
 	public ResponseEntity<Usuario> init(@PathVariable(value = "id") Long id) {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
-
 		return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
 	}
 
@@ -75,7 +73,6 @@ public class IndexController {
 	public ResponseEntity<List<Usuario>> usuarioGet() {
 
 		List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
-
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
@@ -85,11 +82,9 @@ public class IndexController {
 	public ResponseEntity<Page<Usuario>> usuarios() {
 
 		PageRequest page = PageRequest.of(0, 5, Sort.by("nome"));
-
 		Page<Usuario> list = usuarioRepository.findAll(page);
 
 		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
-
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
@@ -99,11 +94,9 @@ public class IndexController {
 	public ResponseEntity<Page<Usuario>> usuarioPage(@PathVariable("page") int pagina) {
 
 		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
-
 		Page<Usuario> list = usuarioRepository.findAll(page);
 
 		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findAll();
-
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
@@ -111,7 +104,6 @@ public class IndexController {
 	@GetMapping(value = "/userByName/{nome}", produces = "application/json")
 	@CachePut("cacheusuarios")
 	public ResponseEntity<Page<Usuario>> userByName(@PathVariable("nome") String nome) {
-
 
 		PageRequest pageRequest = null;
 		Page<Usuario> list = null;
@@ -125,9 +117,7 @@ public class IndexController {
 			pageRequest = PageRequest.of(0, 5, Sort.by("nome"));
 			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
 		}
-
 		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByName(nome);
-
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
@@ -138,7 +128,6 @@ public class IndexController {
 	public ResponseEntity<Page<Usuario>> userByNamePage(@PathVariable("nome") String nome,
 														@PathVariable("page") int page) {
 
-
 		PageRequest pageRequest = null;
 		Page<Usuario> list = null;
 
@@ -151,9 +140,7 @@ public class IndexController {
 			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
 			list = usuarioRepository.findUserByNamePage(nome, pageRequest);
 		}
-
 		//List<Usuario> usuario = (List<Usuario>) usuarioRepository.findUserByName(nome);
-
 		//Thread.sleep(6000); segura o codigo por 6 segundos, define o tempo do carregamento do sistema
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
@@ -181,7 +168,6 @@ public class IndexController {
 		}
 		// Salva o usuário atualizado
 		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
-
 		return ResponseEntity.ok(usuarioSalvo);
 	}
 
@@ -189,7 +175,6 @@ public class IndexController {
 	public ResponseEntity<Usuario> delete(@PathVariable("id") Long id) {
 
 		usuarioRepository.deleteById(id);
-
 		return ResponseEntity.noContent().build();
 	}
 
@@ -211,7 +196,6 @@ public class IndexController {
 			userChart.setNome(nomes);
 			userChart.setSalario(salario);
 		}
-
 		return new ResponseEntity<>(userChart, HttpStatus.OK);
 	}
 }
