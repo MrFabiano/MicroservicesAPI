@@ -153,14 +153,15 @@ public class IndexController {
 			return ResponseEntity.notFound().build();
 		}
 		// Atualiza os dados do usuário existente com os dados do usuário recebido na requisição
+		usuarioExistente.setLogin(usuario.getLogin());
 		usuarioExistente.setNome(usuario.getNome());
 		usuarioExistente.setDataNascimento(usuario.getDataNascimento());
 		usuarioExistente.setCep(usuario.getCep());
 		usuarioExistente.setSenha(usuario.getSenha());
 		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
-		if(usuario.getTelefones() != null) {
-			usuarioExistente.setTelefones(usuario.getTelefones());
-		}
+		//if(usuario.getTelefones() != null) {
+		usuarioExistente.setTelefones(usuario.getTelefones());
+		//}
 		// Verifica se a senha foi alterada
 		if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
