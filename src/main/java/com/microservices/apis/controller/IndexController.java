@@ -159,9 +159,9 @@ public class IndexController {
 		usuarioExistente.setCep(usuario.getCep());
 		usuarioExistente.setSenha(usuario.getSenha());
 		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
-		//if(usuario.getTelefones() != null) {
+		if(usuario.getTelefones() != null) {
 		usuarioExistente.setTelefones(usuario.getTelefones());
-		//}
+		}
 		// Verifica se a senha foi alterada
 		if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
