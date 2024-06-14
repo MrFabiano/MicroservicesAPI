@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microservices.apis.model.Telefone;
 import com.microservices.apis.model.UserReport;
 import com.microservices.apis.model.UserChart;
 import com.microservices.apis.repository.TelefoneRepository;
@@ -159,18 +160,33 @@ public class IndexController {
 		usuarioExistente.setCep(usuario.getCep());
 		usuarioExistente.setSenha(usuario.getSenha());
 		// Atualiza os telefones, assumindo que o método setTelefones esteja definido na classe Usuario
-		if(usuario.getTelefones() != null) {
-		usuarioExistente.setTelefones(usuario.getTelefones());
+//		if (usuario.getTelefones() != null) {
+//			usuarioExistente.setTelefones(usuario.getTelefones());
+//		}
+////		// Pega o número do telefone (exemplo com o primeiro telefone)
+//		if (usuarioExistente.getTelefones() != null && !usuarioExistente.getTelefones().isEmpty()) {
+//			String numeroTelefone = usuarioExistente.getTelefones().get(0).getNumero();
+//			System.out.println("Número do primeiro telefone: " + numeroTelefone);
+//			// Verifica se a senha foi alterada
+//		}
+			if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
+				String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+				usuarioExistente.setSenha(senhaCriptografada);
+			}
+
+			// Atualiza os telefones
+		if (usuario.getTelefones() != null) {
+			// Limpa os telefones existentes e adiciona os novos
+			usuarioExistente.getTelefones().clear();
+			for (Telefone telefone : usuario.getTelefones()) {
+				telefone.setUsuario(usuarioExistente);
+				usuarioExistente.getTelefones().add(telefone);
+			}
 		}
-		// Verifica se a senha foi alterada
-		if (!usuarioExistente.getSenha().equals(usuario.getSenha())) {
-			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-			usuarioExistente.setSenha(senhaCriptografada);
+//			// Salva o usuário atualizado
+			Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
+			return ResponseEntity.ok(usuarioSalvo);
 		}
-		// Salva o usuário atualizado
-		Usuario usuarioSalvo = usuarioRepository.save(usuarioExistente);
-		return ResponseEntity.ok(usuarioSalvo);
-	}
 
 	@DeleteMapping(value = "/{id}", produces = "application/text")
 	public ResponseEntity<Usuario> delete(@PathVariable("id") Long id) {

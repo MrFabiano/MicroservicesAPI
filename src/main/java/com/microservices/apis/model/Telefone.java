@@ -1,11 +1,7 @@
 package com.microservices.apis.model;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import org.hibernate.annotations.ForeignKey;
 
@@ -21,7 +17,7 @@ public class Telefone {
     private Long id;
     private String numero;
     @JsonIgnore
-    @ForeignKey(name = "usuario_id")
+	@JoinColumn(name = "usuario_id")
     @ManyToOne
     private Usuario usuario;
     
